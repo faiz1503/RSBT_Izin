@@ -2,7 +2,7 @@
 <script>
     console.log('test')
     document.addEventListener("DOMContentLoaded", function(event) {
-        table = $('#data').DataTable({
+        table = $('#myData').DataTable({
             "processing": true,
             "serverSide": true,
             "lengthMenu": [
@@ -177,7 +177,10 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="text-right">
-                            <button class="btn btn-success btn-xs" style="margin-right: 20px;" data-toggle="modal" data-target="#modal_tambahstok">
+                            <button class="btn btn-primary btn-xs" style="margin-right: 20px;" data-toggle="modal" data-target="#modal_tambahstok">
+                                <li class="fa fa-pencil"></li> Kelola Data Jenis Izin
+                            </button>
+                            <button class="btn btn-success btn-xs" style="margin-right: 20px;" data-toggle="modal" data-target="#modalAdd">
                                 <li class="fa fa-plus"></li> Add Data
                             </button>
                         </div>
@@ -190,9 +193,8 @@
 
                         <div class="table-wrap">
                             <!-- <p id="notif_load" style="color:red;">Loading data, Please wait</p> -->
-
                             <div class="table-responsive">
-                                <table class="table table-hover display  pb-30" id="myData">
+                                <table class="table table-hover display " id="myData">
                                     <thead>
                                         <tr class="bg-success">
                                             <th>NO</th>
@@ -211,6 +213,7 @@
                                             <th>Upload Bukti Izin</th>
                                             <th>Status</th>
                                             <th>Jenis Izin</th>
+                                            <th>Tools</th>
                                         </tr>
                                     </thead>
 
@@ -228,200 +231,168 @@
 
             <!-- Modal -->
 
-            <div class="panel-wrapper collapse in">
-                <div class="panel-body">
-                    <!-- sample modal content -->
-
-
-                    <div class="modal fade " id="modal_tambahstok" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="display: none;">
-
-
-                        <div class="modal-dialog modal-lg">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <!-- Modal -->
+            <div id="modalAdd" class="modal fade" role="dialog">
+                <div class="modal-dialog modal-lg">
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">
+                                <li class="fa fa-list"></li> Form Pengajuan Izin
+                            </h5>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <?php echo form_open('', array('id' => 'form_inputan', 'method' => 'post')); ?>
+                        <div class="modal-body">
+                            <?php echo form_input(array('id' => 'id_izin', 'name' => 'id_izin', 'type' => 'hidden')); ?>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="field item form-group">
+                                        <label class="col-form-label col-md-4 col-sm-3">Nama Pegawai<span class="required">*</span></label>
+                                        <div class="col-md-8 xdisplay_inputx form-group row ">
+                                            <select name="id_pegawai" id="id_pegawai" class="form-control select2">
+                                                <option value="">Pilih Pegawai</option>
+                                                <?php foreach ($dataPegawai as $row) { ?>
+                                                    <option value="<?php echo $row->id_pegawai ?>"><?php echo $row->nama; ?></option>
+                                                <?php } ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="field item form-group">
+                                        <label class="col-form-label col-md-4 col-sm-3">Lama Izin<span class="required">*</span></label>
+                                        <div class="col-md-8 xdisplay_inputx form-group row ">
+                                            <input type="text" id="lama_izin" name="lama_izin" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="field item form-group">
+                                        <label class="col-form-label col-md-4 col-sm-3">Tanggal Mulai<span class="required">*</span></label>
+                                        <div class="col-md-8 xdisplay_inputx form-group row ">
+                                            <input type="text" id="lama_izin" name="lama_izin" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="field item form-group">
+                                        <label class="col-form-label col-md-4 col-sm-3">Tanggal Berakhir<span class="required">*</span></label>
+                                        <div class="col-md-8 xdisplay_inputx form-group row ">
+                                            <input type="text" id="lama_izin" name="lama_izin" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="field item form-group">
+                                        <label class="col-form-label col-md-4 col-sm-3">Jadwal Off<span class="required">*</span></label>
+                                        <div class="col-md-8 xdisplay_inputx form-group row ">
+                                            <input type="text" id="lama_izin" name="lama_izin" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="field item form-group">
+                                        <label class="col-form-label col-md-4 col-sm-3">Konfirmasi KA Unit<span class="required">*</span></label>
+                                        <div class="col-md-8 xdisplay_inputx form-group row ">
+                                            <input type="text" id="lama_izin" name="lama_izin" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="field item form-group">
+                                        <label class="col-form-label col-md-4 col-sm-3">Keterangan KA Unit<span class="required">*</span></label>
+                                        <div class="col-md-8 xdisplay_inputx form-group row ">
+                                            <input type="text" id="lama_izin" name="lama_izin" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="field item form-group">
+                                        <label class="col-form-label col-md-4 col-sm-3">Konfirmasi KA Bidang<span class="required">*</span></label>
+                                        <div class="col-md-8 xdisplay_inputx form-group row ">
+                                            <input type="text" id="lama_izin" name="lama_izin" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="field item form-group">
+                                        <label class="col-form-label col-md-4 col-sm-3">Keterangan KA Bidang<span class="required">*</span></label>
+                                        <div class="col-md-8 xdisplay_inputx form-group row ">
+                                            <input type="text" id="lama_izin" name="lama_izin" class="form-control">
+                                        </div>
+                                    </div>
                                 </div>
+                            </div>
 
-                                <!--modal 1-->
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">Close</button>
+                            <button type="button" onclick="simpan()" class="btn btn-success btn-sm">Simpan</button>
 
-                                <div class="modal-body">
-                                    <!-- Form body  -->
-                                    <form class="form-horizontal">
-                                        <div class="form-body mt-20">
+                        </div>
+                        <?php echo form_close() ?>
+                    </div>
 
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <div class="panel panel-default card-view">
-                                                        <div class="panel-heading">
-                                                            <div class="pull-left">
-                                                                <h6 class="txt-dark capitalize-font"><i class="icon-user mr-10"></i>INFO
-                                                                    STOK</h6>
-                                                            </div>
-                                                            <div class="clearfix"></div>
-                                                        </div>
-                                                        <div class="panel-wrapper collapse in">
-                                                            <div class="panel-body">
-                                                                <div class="row">
-                                                                    <div class="col-sm-12 col-xs-12">
-                                                                        <div class="form-wrap">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End -->
+
+<!-- /Modal Edit Akun -->
+<div class="panel-wrapper collapse in">
+    <div class="panel-body">
+        <!-- sample modal content -->
 
 
-                                                                            <div class="form-body">
+        <div class="modal fade" id="ModalDetailStok" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <form method="post">
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="panel panel-default card-view">
+                                        <div class="panel-heading">
+                                            <div class="pull-left">
+                                                <h6 class="panel-title txt-dark">DETAIL STOK OBAT</h6>
+                                            </div>
+                                            <div class="clearfix"></div>
+                                        </div>
+                                        <div class="panel-wrapper collapse in">
+                                            <div class="panel-body">
+                                                <div class="table-wrap">
+                                                    <div class="table-responsive">
+                                                        <table id="datablestok" class="table table-hover display  pb-30">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>NO</th>
+                                                                    <th>NAMA OBAT</th>
+                                                                    <th>TANGGAL EXPIRED</th>
+                                                                    <th>STOK</th>
+                                                                </tr>
+                                                            </thead>
 
-                                                                                <hr>
-                                                                                <div class="row">
-
-                                                                                    <div class="col-md-6">
-                                                                                        <div class="form-group ">
-                                                                                            <label class="control-label col-md-3">NAMA BARANG</label>
-                                                                                            <div class="col-md-9 has-success">
-                                                                                                <select class="form-control filled-input select2" onchange="tampilStok()" id="inLogistik">
-                                                                                                    <option value="">-</option>
-
-                                                                                                    <?php foreach ($obat as $row) { ?>
-                                                                                                        <option value="<?php echo $row["id_logistik"] . "|" . $row["stok"] . "|" . $row["nama"]; ?>"><?php echo $row["nama"]; ?></option>
-
-                                                                                                    <?php } ?>
-
-                                                                                                </select>
-
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-
-                                                                                    <!--/span-->
-                                                                                    <div class="col-md-6">
-                                                                                        <div class="form-group ">
-                                                                                            <label class="control-label col-md-3">STOK
-                                                                                                TERSEDIA</label>
-                                                                                            <div class="col-md-9 has-error">
-                                                                                                <input type="text" class="form-control " placeholder="KONTAK SALES" id="inTersedia" disabled="" value="0">
-
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                    <!-- /Row -->
-                                                                                    <div class="col-md-6">
-                                                                                        <div class="form-group">
-                                                                                            <label class="control-label col-md-3">STOK
-                                                                                                ASLI</label>
-                                                                                            <div class="col-md-9 has-success">
-                                                                                                <input type="number" class="form-control " placeholder="JUMLAH" id="inStokAsli" oninput="tampilSelisih()" value="0">
-
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                    <div class="col-md-6">
-                                                                                        <div class="form-group ">
-                                                                                            <label class="control-label col-md-3">SELISIH</label>
-                                                                                            <div class="col-md-9 has-error">
-                                                                                                <input type="text" class="form-control " placeholder="KONTAK SALES" id="inSelisih" disabled="" value="0">
-
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-
-                                                                                    <div class="col-md-6">
-                                                                                        <div class="form-group">
-                                                                                            <label class="control-label col-md-3">TANGGAL EXPIRED</label>
-                                                                                            <div class="col-md-9 has-success">
-                                                                                                <input type="date" class="form-control txt-dark" data-toggle="datepicker" placeholder="JUMLAH" autocomplete="off" id="inTglExp">
-
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                    <!--/span-->
-                                                                                </div>
-                                                                                <!-- /Row -->
-                                                                                <div class="form-actions mt-10">
-                                                                                    <button onclick="insertStok()" class="btn btn-success btn-anim  btn-sm" type="button"><i class="icon-rocket"></i><span class="btn-text">Tambah</span></button>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                                                        </table>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- End -->
-
-            <!-- /Modal Edit Akun -->
-            <div class="panel-wrapper collapse in">
-                <div class="panel-body">
-                    <!-- sample modal content -->
 
 
-                    <div class="modal fade" id="ModalDetailStok" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <form method="post">
-                                    <div class="modal-body">
+                                    </div>
+                                    <div align="right">
+
                                         <div class="row">
-                                            <div class="col-sm-12">
-                                                <div class="panel panel-default card-view">
-                                                    <div class="panel-heading">
-                                                        <div class="pull-left">
-                                                            <h6 class="panel-title txt-dark">DETAIL STOK OBAT</h6>
-                                                        </div>
-                                                        <div class="clearfix"></div>
-                                                    </div>
-                                                    <div class="panel-wrapper collapse in">
-                                                        <div class="panel-body">
-                                                            <div class="table-wrap">
-                                                                <div class="table-responsive">
-                                                                    <table id="datablestok" class="table table-hover display  pb-30">
-                                                                        <thead>
-                                                                            <tr>
-                                                                                <th>NO</th>
-                                                                                <th>NAMA OBAT</th>
-                                                                                <th>TANGGAL EXPIRED</th>
-                                                                                <th>STOK</th>
-                                                                            </tr>
-                                                                        </thead>
-
-                                                                    </table>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-
-                                                </div>
-                                                <div align="right">
-
-                                                    <div class="row">
-                                                        <div class="col-md-6">
-                                                            <div class="row">
-                                                                <div class="col-md-offset-3 col-md-9">
-                                                                    <!-- <button type="submit" class="btn btn-success btn-rounded mr-10">Submit</button> -->
-                                                                    <!-- <button type="button" class="btn btn-default btn-rounded">Cancel</button> -->
-                                                                    <span></span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6"> </div>
+                                            <div class="col-md-6">
+                                                <div class="row">
+                                                    <div class="col-md-offset-3 col-md-9">
+                                                        <!-- <button type="submit" class="btn btn-success btn-rounded mr-10">Submit</button> -->
+                                                        <!-- <button type="button" class="btn btn-default btn-rounded">Cancel</button> -->
+                                                        <span></span>
                                                     </div>
                                                 </div>
                                             </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+                                            <div class="col-md-6"> </div>
+                                        </div>
+                                    </div>
+                                </div>
+                    </form>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
 
 
 
 
 
-            <div class="seprator-block"></div>
-            <!--end of coba-->
+<div class="seprator-block"></div>
+<!--end of coba-->
