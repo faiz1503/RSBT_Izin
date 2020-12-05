@@ -91,8 +91,17 @@ class M_Pengajuan_izin extends CI_Model
 		return $this->db->affected_rows();
 	}
 
+
+	private function _deleteImage($id)
+	{
+		$data = $this->get_by_id($id);
+		$filename = explode(".", $data[0]->bukti_izin)[0];
+		return array_map('unlink', glob(FCPATH . "bukti_izin/$filename.*"));
+	}
+
 	function delete($id)
 	{
+		$this->_deleteImage($id);
 		$this->db->where('id_izin', $id);
 		$this->db->delete('izin');
 	}

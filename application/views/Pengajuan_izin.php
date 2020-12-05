@@ -106,66 +106,6 @@
                 });
             });
     }
-
-
-    function simpan() {
-        var token_name = '<?php echo $this->security->get_csrf_token_name(); ?>'
-        var csrf_hash = ''
-        var url;
-        if (save_method == 'add') {
-            url = '<?php echo base_url() ?>manajemen/kesatuan/addData';
-        } else {
-            url = '<?php echo base_url() ?>manajemen/kesatuan/update';
-        }
-        swal({
-                title: "Apakah anda sudah yakin ?",
-                type: "warning",
-                showCancelButton: true,
-                showLoaderOnConfirm: true,
-                cancelButtonText: "Kembali",
-                confirmButtonText: "Ya",
-                closeOnConfirm: false
-            },
-            function() {
-                $.ajax({
-                    url: url,
-                    method: 'POST',
-                    data: $('#form_inputan').serialize(),
-                    dataType: "JSON",
-                    success: function(resp) {
-                        data = resp.result
-                        csrf_hash = resp.csrf['token'];
-                        $('#form_inputan input[name=' + token_name + ']').val(csrf_hash);
-                        if (data['status'] == 'success') {
-                            updateAllTable();
-                            $('.form-group').removeClass('has-error')
-                                .removeClass('has-success')
-                                .find('#text-error').remove();
-                            $("#form_inputan")[0].reset();
-                            $('#modal').modal('hide');
-                        } else {
-                            $.each(data['messages'], function(key, value) {
-                                var element = $('#' + key);
-                                element.closest('div.form-group')
-                                    .removeClass('has-error')
-                                    .addClass(value.length > 0 ? 'has-error' : 'has-success')
-                                    .find('#text-error')
-                                    .remove();
-                                element.after(value);
-                            });
-                        }
-                        swal({
-                            html: true,
-                            timer: 1300,
-                            showConfirmButton: false,
-                            title: data['msg'],
-                            type: data['status']
-                        });
-                    }
-
-                });
-            });
-    }
 </script>
 <div class="row">
     <div class="col-sm-12">
