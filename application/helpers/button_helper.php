@@ -15,6 +15,12 @@ function get_btn_group1($btn_edit, $btn_delete)
     return '<div class="text-center">' . $li_btn_edit . $li_btn_delete . '</div>';
 }
 
+function btn_upload_gambar($upload)
+{
+    $btn_upload = '<button class="badge bg-blue" onClick=' . $upload . ' title="Update/Upload Gambar"><li style="font-size:12px" class="fa fa-upload"></li></button>';
+    return '<div class="text-center">' . $btn_upload . '</div>';
+}
+
 function get_btn_export($btn_edit)
 {
     $li_btn_edit    = '<button class="btn btn-sm btn-info" title="Cetak Slip Gaji" onClick=' . $btn_edit . '><li class="fa fa-print"></li></button>';

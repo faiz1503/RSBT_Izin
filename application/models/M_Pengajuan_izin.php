@@ -6,7 +6,7 @@ class M_Pengajuan_izin extends CI_Model
 {
 	public function getAllData($username)
 	{
-		$this->datatables->select('i.id_izin, p.nama, i.lama_izin, i.tgl_mulai, i.tgl_akhir, i.jadwal_off, i.acc_kaunit, i.ket_kaunit, i.acc_kabid, i.ket_kabid, i.acc_kabid_sdm, i.ket_sdm, i.bukti_izin, i.status, ji.jenis_izin, ji.jenis_izin');
+		$this->datatables->select('i.id_izin, p.nama, i.lama_izin, i.tgl_mulai, i.tgl_akhir, i.jadwal_off, i.acc_kaunit, i.ket_kaunit, i.acc_kabid, i.ket_kabid, i.acc_kabid_sdm, i.ket_sdm, i.bukti_izin, ji.jenis_izin, ji.jenis_izin');
 		$this->datatables->from('izin i');
 		$this->datatables->join('pegawai p', 'p.id_pegawai = i.id_pegawai', 'left');
 		$this->datatables->join('jenis_izin ji', 'ji.id_jenis_izin = i.id_jenis_izin', 'left');
@@ -125,6 +125,7 @@ class M_Pengajuan_izin extends CI_Model
 
 	public function updateStatus($id)
 	{
+		// $this->_deleteImage($id);
 		return $this->db->query("update izin set status = 2 where id_izin =" . $id);
 	}
 
@@ -139,6 +140,22 @@ class M_Pengajuan_izin extends CI_Model
 		$this->db->from('izin');
 		$this->db->where('id_izin', $id);
 		return $this->db->get()->row();
+	}
+
+	public function getByIdUpload($id)
+	{
+		$this->db->select('i.id_izin, i.bukti_izin, i.id_pegawai, p.nama');
+		$this->db->from('izin i');
+		$this->db->join('pegawai p', 'p.id_pegawai = i.id_pegawai', 'left');
+		$this->db->where('i.id_izin', $id);
+		return $this->db->get()->row();
+	}
+
+	public function updateGbr($id, $data)
+	{
+		$this->_deleteImage($id);
+
+		return $this->db->query('update izin set bukti_izin = "' . $data . '" where id_izin = ' . $id);
 	}
 
 	function update($id, $data)

@@ -55,13 +55,42 @@
             .removeClass('has-success')
             .find('#text-error').remove();
         $.ajax({
-            url: "<?php echo site_url('manajemen/kesatuan/getById/'); ?>/" + id,
+            url: "<?php echo site_url('pengajuan_izin/izin/get_by_id/'); ?>/" + id,
             type: "GET",
             dataType: "JSON",
             success: function(resp) {
                 data = resp.data
-                $('[name="id"]').val(data.id);
-                $('[name="nama_kesatuan"]').val(data.nama_kesatuan);
+                $('[name="id_izin"]').val(data.id_izin);
+                $('[name="nama"]').val(data.nama);
+                $('[name="id_pegawai"]').val(data.id_pegawai);
+                $('[name="tgl_mulai"]').val(data.tgl_mulai);
+                $('[name="tgl_akhir"]').val(data.tgl_akhir);
+                $('[name="jadwal_off"]').val(data.jadwal_off);
+                $('[name="id_jenis_izin"]').val(data.id_jenis_izin);
+                $('.reset').hide();
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert('Error Get Data From Ajax');
+            }
+        });
+
+    }
+
+    function uploadGbr(id) {
+        save_method = 'update';
+        $('#form_inputan1')[0].reset();
+        $('#modalUpload').modal('show');
+        $('.form-group').removeClass('has-error')
+            .removeClass('has-success')
+            .find('#text-error').remove();
+        $.ajax({
+            url: "<?php echo site_url('pengajuan_izin/izin/getById/'); ?>/" + id,
+            type: "GET",
+            dataType: "JSON",
+            success: function(resp) {
+                data = resp.data
+                $('[name="id_izin"]').val(data.id_izin);
+                $('[name="nama"]').val(data.nama);
                 $('.reset').hide();
             },
             error: function(jqXHR, textStatus, errorThrown) {
@@ -106,7 +135,7 @@
             });
     }
 
-    function simpan() {
+    function save() {
         var token_name = '<?php echo $this->security->get_csrf_token_name(); ?>'
         var csrf_hash = ''
         var url;
@@ -141,6 +170,7 @@
                                 .find('#text-error').remove();
                             $("#form_inputan")[0].reset();
                             $('#modalAdd').modal('hide');
+                            // $('#modalUpload').modal('show');
                         } else {
                             $.each(data['messages'], function(key, value) {
                                 var element = $('#' + key);
@@ -154,7 +184,7 @@
                         }
                         swal({
                             html: true,
-                            timer: 1300,
+                            timer: 2500,
                             showConfirmButton: false,
                             title: data['msg'],
                             type: data['status']
@@ -204,14 +234,14 @@
                         <div class="table-wrap">
                             <!-- <p id="notif_load" style="color:red;">Loading data, Please wait</p> -->
                             <div class="table-responsive">
-                                <table class="table table-hover display " id="myData">
+                                <table class="table table-hover display table-responsive table-stripted" id="myData">
                                     <thead>
                                         <tr class="bg-success">
                                             <th>
                                                 <div style="font-size:9px">#</div>
                                             </th>
                                             <th>
-                                                <div style="font-size:9px">Tools</div>
+                                                <div style="font-size:9px;width:90px;">Tools</div>
                                             </th>
                                             <th>
                                                 <div style="font-size:9px">Nama Pegawai</div>
@@ -249,9 +279,6 @@
                                             <th>
                                                 <div style="font-size:9px">Bukti Izin</div>
                                             </th>
-                                            <!-- <th>
-                                                <div style="font-size:9px">Status</div>
-                                            </th> -->
                                             <th>
                                                 <div style="font-size:9px">Jenis Izin</div>
                                             </th>
@@ -263,157 +290,195 @@
                     </div>
                 </div>
             </div>
-            <!-- Modal -->
-            <div id="modalAdd" class="modal fade" role="dialog">
-                <div class="modal-dialog modal-lg">
-                    <!-- Modal content-->
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">
-                                <li class="fa fa-list"></li> Form Pengajuan Izin
-                            </h5>
-                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-
-                        </div>
-                        <?php echo form_open('', array('id' => 'form_inputan', 'method' => 'post')); ?>
-                        <div class="modal-body">
-                            <div class="row">
-                                <input type="hidden" id="id_izin" name="id_izin">
-                                <div class="col-md-6">
-                                    <!-- <div class="field item form-group">
-                                        <label class="col-form-label col-md-4 col-sm-3">Kode Izin<span class="required"></span></label>
-                                        <div class="col-md-8 xdisplay_inputx form-group row ">
-                                            <input type="text" id="id_izin" name="id_izin" value="<?php echo $getMaxId; ?>" class="form-control" readonly>
-                                        </div>
-                                    </div> -->
-                                    <div class="field item form-group">
-                                        <label class="col-form-label col-md-4 col-sm-3">Nama Pegawai<span class="required">*</span></label>
-                                        <div class="col-md-8 xdisplay_inputx form-group row ">
-                                            <?php if ($getPegawai) { ?>
-                                                <input type="hidden" id="id_pegawai" name="id_pegawai" value="<?= $getPegawai[0]->id_pegawai; ?>">
-                                                <input type="text" name="" id="" class="form-control" value="<?= $getStaff[0]->nama; ?>" readonly>
-                                            <?php } else {
-                                                echo '<div style="color:red">Data Pegawai tidak ditemukan !</div>';
-                                            } ?>
-                                            <!-- <select name="id_pegawai" id="id_pegawai" class="form-control">
-                                                <option value="">Pilih Pegawai</option>
-                                                <?php foreach ($getPegawai as $row) { ?>
-                                                    <option value="<?php echo $row->id_pegawai ?>"><?php echo $row->id_staff ?></option>
-
-                                                <?php } ?>
-
-                                            </select> -->
-                                        </div>
-                                    </div>
-                                    <!-- <div class="field item form-group">
-                                        <label class="col-form-label col-md-4 col-sm-3">Lama Izin<span class="required">*</span></label>
-                                        <div class="col-md-8 xdisplay_inputx form-group row ">
-                                            <input type="text" id="lama_izin" name="lama_izin" class="form-control" required>
-                                        </div>
-                                    </div> -->
-                                    <div class="field item form-group">
-                                        <label class="col-form-label col-md-4 col-sm-3">Tanggal Mulai<span class="required">*</span></label>
-                                        <div class="col-md-8 xdisplay_inputx form-group row ">
-                                            <input type="date" id="tgl_mulai" name="tgl_mulai" class="form-control" required>
-                                        </div>
-                                    </div>
-                                    <div class="field item form-group">
-                                        <label class="col-form-label col-md-4 col-sm-3">Tanggal Berakhir<span class="required">*</span></label>
-                                        <div class="col-md-8 xdisplay_inputx form-group row ">
-                                            <input type="date" id="tgl_akhir" name="tgl_akhir" class="form-control" required>
-                                        </div>
-                                    </div>
-                                    <div class="field item form-group">
-                                        <label class="col-form-label col-md-4 col-sm-3">Jadwal Off<span class="required">*</span></label>
-                                        <div class="col-md-8 xdisplay_inputx form-group row ">
-                                            <input type="text" id="jadwal_off" name="jadwal_off" class="form-control">
-                                        </div>
-                                    </div>
-                                    <?php if ($getStaff[0]->izin_akses == 'kaunit') { ?>
-                                        <div class="field item form-group">
-                                            <label class="col-form-label col-md-4 col-sm-3">Konfirmasi KA Unit<span class="required">*</span></label>
-                                            <div class="col-md-8 xdisplay_inputx form-group row ">
-                                                <input type="text" id="acc_kaunit" name="acc_kaunit" class="form-control">
-                                            </div>
-                                        </div>
-                                        <div class="field item form-group">
-                                            <label class="col-form-label col-md-4 col-sm-3">Keterangan KA Unit<span class="required">*</span></label>
-                                            <div class="col-md-8 xdisplay_inputx form-group row ">
-                                                <input type="text" id="ket_kaunit" name="ket_kaunit" class="form-control">
-                                            </div>
-                                        </div>
-                                    <?php } ?>
-                                </div>
-                                <div class="col-md-6">
-                                    <?php if ($getStaff[0]->izin_akses == 'kabid') { ?>
-                                        <div class="field item form-group">
-                                            <label class="col-form-label col-md-4 col-sm-3">Konfirmasi KA Bidang<span class="required">*</span></label>
-                                            <div class="col-md-8 xdisplay_inputx form-group row ">
-                                                <input type="text" id="acc_kabid" name="acc_kabid" class="form-control">
-                                            </div>
-                                        </div>
-                                        <div class="field item form-group">
-                                            <label class="col-form-label col-md-4 col-sm-3">Keterangan KA Bidang<span class="required">*</span></label>
-                                            <div class="col-md-8 xdisplay_inputx form-group row ">
-                                                <input type="text" id="ket_kabid" name="ket_kabid" class="form-control">
-                                            </div>
-                                        </div>
-                                    <?php } else if ($getStaff[0]->izin_akses == 'kabid') { ?>
-                                        <div class="field item form-group">
-                                            <label class="col-form-label col-md-4 col-sm-3">Konfirmasi KA Bidang SDM<span class="required">*</span></label>
-                                            <div class="col-md-8 xdisplay_inputx form-group row ">
-                                                <input type="text" id="acc_kabid_sdm" name="acc_kabid_sdm" class="form-control" required>
-                                            </div>
-                                        </div>
-                                        <div class="field item form-group">
-                                            <label class="col-form-label col-md-4 col-sm-3">Keterangan KA Bidang SDM<span class="required">*</span></label>
-                                            <div class="col-md-8 xdisplay_inputx form-group row ">
-                                                <input type="text" id="ket_sdm" name="ket_sdm" class="form-control" required>
-                                            </div>
-                                        </div>
-                                    <?php } ?>
-                                    <div class="field item form-group">
-                                        <label class="col-form-label col-md-4 col-sm-3">Bukti Izin<span class="required">*</span></label>
-                                        <div class="col-md-8 xdisplay_inputx form-group row ">
-                                            <input type="file" id="bukti_izin" name="bukti_izin" class="form-control">
-                                        </div>
-                                    </div>
-                                    <!-- <div class="field item form-group">
-                                        <label class="col-form-label col-md-4 col-sm-3">Status<span class="required">*</span></label>
-                                        <div class="col-md-8 xdisplay_inputx form-group row ">
-                                            <input type="text" id="status" name="status" class="form-control" required>
-                                        </div>
-                                    </div> -->
-                                    <div class="field item form-group">
-                                        <label class="col-form-label col-md-4 col-sm-3">Jenis Izin<span class="required">*</span></label>
-                                        <div class="col-md-8 xdisplay_inputx form-group row ">
-                                            <select name="id_jenis_izin" id="id_jenis_izin" class="form-control" required>
-                                                <option value="">Pilih Jenis Izin</option>
-                                                <?php foreach ($getJenisIzin as $row) { ?>
-                                                    <option value="<?php echo $row->id_jenis_izin; ?>"><?php echo $row->jenis_izin ?></option>
-                                                <?php } ?>
-                                            </select>
-                                            <!-- <input type="text" id="id_jenis_izin" name="id_jenis_izin" class="form-control" required> -->
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">Close</button>
-                            <button type="button" onclick="simpan()" class="btn btn-success btn-sm">Simpan</button>
-                        </div>
-                        <?php echo form_close() ?>
-                    </div>
-
-                </div>
-            </div>
         </div>
     </div>
 </div>
 <!-- End -->
+<!-- Modal Add-->
+<div id="modalAdd" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-md">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <li class="fa fa-list"></li> Form Pengajuan Izin
+                </h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
 
+            </div>
+            <?php echo form_open('', array('id' => 'form_inputan', 'method' => 'post')); ?>
+            <div class="modal-body">
+                <div class="row">
+                    <input type="hidden" id="id_izin" name="id_izin">
+                    <div class="col-md-12">
+                        <!-- <div class="field item form-group">
+                            <label class="col-form-label col-md-4 col-sm-3">Kode Izin<span class="required"></span></label>
+                            <div class="col-md-8 xdisplay_inputx form-group row ">
+                                <input type="text" id="id_izin" name="id_izin" value="<?php echo $getMaxId; ?>" class="form-control" readonly>
+                            </div>
+                        </div> -->
+                        <div class="field item form-group">
+                            <label class="col-form-label col-md-4 col-sm-3">Nama Pegawai<span class="required">*</span></label>
+                            <div class="col-md-8 xdisplay_inputx form-group row ">
+                                <?php if ($getPegawai) { ?>
+                                    <input type="hidden" id="id_pegawai" name="id_pegawai" value="<?= $getPegawai[0]->id_pegawai; ?>">
+                                    <input type="text" name="" id="" class="form-control" value="<?= $getStaff[0]->nama; ?>" readonly>
+                                <?php } else {
+                                    echo '<div style="color:red">Data Pegawai tidak ditemukan !</div>';
+                                } ?>
+                            </div>
+                        </div>
+                        <!-- <div class="field item form-group">
+                            <label class="col-form-label col-md-4 col-sm-3">Lama Izin<span class="required">*</span></label>
+                            <div class="col-md-8 xdisplay_inputx form-group row ">
+                                <input type="text" id="lama_izin" name="lama_izin" class="form-control" required>
+                            </div>
+                        </div> -->
+                        <div class="field item form-group">
+                            <label class="col-form-label col-md-4 col-sm-3">Tanggal Mulai<span class="required">*</span></label>
+                            <div class="col-md-8 xdisplay_inputx form-group row ">
+                                <input type="date" id="tgl_mulai" name="tgl_mulai" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="field item form-group">
+                            <label class="col-form-label col-md-4 col-sm-3">Tanggal Berakhir<span class="required">*</span></label>
+                            <div class="col-md-8 xdisplay_inputx form-group row ">
+                                <input type="date" id="tgl_akhir" name="tgl_akhir" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="field item form-group">
+                            <label class="col-form-label col-md-4 col-sm-3">Jadwal Off<span class="required">*</span></label>
+                            <div class="col-md-8 xdisplay_inputx form-group row ">
+                                <input type="text" id="jadwal_off" name="jadwal_off" class="form-control">
+                            </div>
+                        </div>
+                        <?php if ($getStaff[0]->izin_akses == 'kaunit') { ?>
+                            <div class="field item form-group">
+                                <label class="col-form-label col-md-4 col-sm-3">Konfirmasi KA Unit<span class="required">*</span></label>
+                                <div class="col-md-8 xdisplay_inputx form-group row ">
+                                    <input type="text" id="acc_kaunit" name="acc_kaunit" class="form-control">
+                                </div>
+                            </div>
+                            <div class="field item form-group">
+                                <label class="col-form-label col-md-4 col-sm-3">Keterangan KA Unit<span class="required">*</span></label>
+                                <div class="col-md-8 xdisplay_inputx form-group row ">
+                                    <input type="text" id="ket_kaunit" name="ket_kaunit" class="form-control">
+                                </div>
+                            </div>
+                        <?php } ?>
+                        <!-- </div>
+                    <div class="col-md-6"> -->
+                        <?php if ($getStaff[0]->izin_akses == 'kabid') { ?>
+                            <div class="field item form-group">
+                                <label class="col-form-label col-md-4 col-sm-3">Konfirmasi KA Bidang<span class="required">*</span></label>
+                                <div class="col-md-8 xdisplay_inputx form-group row ">
+                                    <input type="text" id="acc_kabid" name="acc_kabid" class="form-control">
+                                </div>
+                            </div>
+                            <div class="field item form-group">
+                                <label class="col-form-label col-md-4 col-sm-3">Keterangan KA Bidang<span class="required">*</span></label>
+                                <div class="col-md-8 xdisplay_inputx form-group row ">
+                                    <input type="text" id="ket_kabid" name="ket_kabid" class="form-control">
+                                </div>
+                            </div>
+                        <?php } else if ($getStaff[0]->izin_akses == 'kabid_sdm') { ?>
+                            <div class="field item form-group">
+                                <label class="col-form-label col-md-4 col-sm-3">Konfirmasi KA Bidang SDM<span class="required">*</span></label>
+                                <div class="col-md-8 xdisplay_inputx form-group row ">
+                                    <input type="text" id="acc_kabid_sdm" name="acc_kabid_sdm" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="field item form-group">
+                                <label class="col-form-label col-md-4 col-sm-3">Keterangan KA Bidang SDM<span class="required">*</span></label>
+                                <div class="col-md-8 xdisplay_inputx form-group row ">
+                                    <input type="text" id="ket_sdm" name="ket_sdm" class="form-control" required>
+                                </div>
+                            </div>
+                        <?php } ?>
+                        <!-- <div class="field item form-group">
+                            <label class="col-form-label col-md-4 col-sm-3">Bukti Izin<span class="required">*</span></label>
+                            <div class="col-md-8 xdisplay_inputx form-group row ">
+                                <input type="file" id="bukti_izin" name="bukti_izin" class="form-control">
+                            </div>
+                        </div> -->
+                        <!-- <div class="field item form-group">
+                            <label class="col-form-label col-md-4 col-sm-3">Status<span class="required">*</span></label>
+                            <div class="col-md-8 xdisplay_inputx form-group row ">
+                                <input type="text" id="status" name="status" class="form-control" required>
+                            </div>
+                        </div> -->
+                        <div class="field item form-group">
+                            <label class="col-form-label col-md-4 col-sm-3">Jenis Izin<span class="required">*</span></label>
+                            <div class="col-md-8 xdisplay_inputx form-group row ">
+                                <select name="id_jenis_izin" id="id_jenis_izin" class="form-control" required>
+                                    <option value="">Pilih Jenis Izin</option>
+                                    <?php foreach ($getJenisIzin as $row) { ?>
+                                        <option value="<?php echo $row->id_jenis_izin; ?>"><?php echo $row->jenis_izin ?></option>
+                                    <?php } ?>
+                                </select>
+                                <!-- <input type="text" id="id_jenis_izin" name="id_jenis_izin" class="form-control" required> -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" onclick="save()" class="btn btn-success btn-sm">Simpan</button>
+            </div>
+            <?php echo form_close() ?>
+        </div>
+
+    </div>
+</div>
+<!-- Modal Upload Gambar-->
+<div id="modalUpload" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-md">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <li class="fa fa-list"></li> Upload/Ubah Bukti Izin
+                </h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+
+            </div>
+            <?php echo form_open('pengajuan_izin/izin/uploadData', array('id' => 'form_inputan1', 'method' => 'post', "enctype" => "multipart/form-data")); ?>
+            <div class="modal-body">
+                <div class="row">
+                    <input type="hidden" id="id_izin" name="id_izin">
+                    <div class="col-md-12">
+                        <div class="field item form-group">
+                            <label class="col-form-label col-md-4 col-sm-3">Nama Pegawai<span class="required">*</span></label>
+                            <div class="col-md-8 xdisplay_inputx form-group row ">
+                                <?php if ($getPegawai) { ?>
+                                    <!-- <input type="hidden" id="id_pegawai" name="id_pegawai" value="<?= $getPegawai[0]->id_pegawai; ?>"> -->
+                                    <input type="text" name="" id="" class="form-control" value="<?= $getStaff[0]->nama; ?>" readonly>
+                                <?php } else {
+                                    echo '<div style="color:red">Data Pegawai tidak ditemukan !</div>';
+                                } ?>
+                            </div>
+                        </div>
+                        <div class="field item form-group">
+                            <label class="col-form-label col-md-4 col-sm-3">Bukti Izin<span class="required">*</span></label>
+                            <div class="col-md-8 xdisplay_inputx form-group row ">
+                                <input type="file" id="bukti_izin" name="bukti_izin" class="form-control" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-success btn-sm">Simpan</button>
+            </div>
+            <?php echo form_close() ?>
+        </div>
+
+    </div>
+</div>
 
 
 <div class="seprator-block"></div>
