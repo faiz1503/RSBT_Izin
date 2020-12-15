@@ -4,12 +4,15 @@ defined('BASEPATH') or exit('No direct script access allowed');
 /* Model Code Author : Fitra Arrafiq */
 class M_Pengajuan_izin extends CI_Model
 {
-	public function getAllData()
+	public function getAllData($username)
 	{
 		$this->datatables->select('i.id_izin, p.nama, i.lama_izin, i.tgl_mulai, i.tgl_akhir, i.jadwal_off, i.acc_kaunit, i.ket_kaunit, i.acc_kabid, i.ket_kabid, i.acc_kabid_sdm, i.ket_sdm, i.bukti_izin, i.status, ji.jenis_izin, ji.jenis_izin');
 		$this->datatables->from('izin i');
 		$this->datatables->join('pegawai p', 'p.id_pegawai = i.id_pegawai', 'left');
 		$this->datatables->join('jenis_izin ji', 'ji.id_jenis_izin = i.id_jenis_izin', 'left');
+		$this->datatables->join('staff s', 's.id_staff = p.id_staff', 'left');
+		$this->datatables->where('s.username', $username);
+		$this->datatables->where('i.status = 1');
 		return $this->datatables->generate();
 	}
 
@@ -21,20 +24,69 @@ class M_Pengajuan_izin extends CI_Model
 		return $this->db->get()->result();
 	}
 
+	public function getIdStaff($idStaff)
+	{
+		$this->db->select('id_staff');
+		$this->db->from('pegawai');
+		$this->db->where('id_staff', $idStaff);
+		return $this->db->get()->result();
+	}
+
+	public function getPegawaiByUsernameStaff($username)
+	{
+		$this->db->select('p.id_pegawai,p.nama,p.id_staff,s.username');
+		$this->db->from('pegawai p');
+		$this->db->join('staff s', 's.id_staff = p.id_staff', 'left');
+		$this->db->where('s.username', $username);
+		return $this->db->get()->result();
+	}
+
+	public function getJenisIzin()
+	{
+		$this->db->select('*');
+		$this->db->from('jenis_izin');
+		$this->db->order_by('id_jenis_izin', 'desc');
+		return $this->db->get()->result();
+	}
+
+	public function getDataStaff($username)
+	{
+		$this->db->select('*');
+		$this->db->from('staff');
+		$this->db->where('username', $username);
+		return $this->db->get()->result();
+	}
+
 	public function getKodeIzin()
 	{
-		$q = $this->db->query("select MAX(RIGHT(id_izin,3)) as id_izin from izin");
+		$q = $this->db->query("select MAX(RIGHT(id_izin,1000)) as id_izin from izin");
 		$kd = "";
 		if ($q->num_rows() > 0) {
 			foreach ($q->result() as $k) {
 				$tmp = ((int) $k->id_izin) + 1;
-				$kd = sprintf("%04s", $tmp);
+				$kd = sprintf("%03s", $tmp);
 			}
 		} else {
-			$kd = "0001";
+			$kd = "001";
 		}
 		return "PI-" . $kd;
 	}
+
+	public function getKodeIzin1()
+	{
+		$q = $this->db->query("select MAX(RIGHT(id_izin,9)) as id_izin from izin");
+		$kd = "";
+		if ($q->num_rows() > 0) {
+			foreach ($q->result() as $k) {
+				$tmp = ((int) $k->id_izin) + 1;
+				$kd = sprintf("%09s", $tmp);
+			}
+		} else {
+			$kd = "000000001";
+		}
+		return "PI-" . $kd;
+	}
+
 
 	public function getPegawai()
 	{
@@ -50,9 +102,9 @@ class M_Pengajuan_izin extends CI_Model
 		return $this->db->affected_rows() > 0 ? $this->db->insert_id() : FALSE;
 	}
 
-	function simpan_upload($bukti_izin, $id_izin, $id_pegawai, $lama_izin, $tgl_mulai, $tgl_akhir, $jadwal_off, $acc_kaunit, $ket_kaunit, $acc_kabid, $ket_kabid, $acc_kabid_sdm, $ket_sdm, $status, $id_jenis_izin)
+	function simpan_upload($bukti_izin,  $id_pegawai, $lama_izin, $tgl_mulai, $tgl_akhir, $jadwal_off, $acc_kaunit, $ket_kaunit, $acc_kabid, $ket_kabid, $acc_kabid_sdm, $ket_sdm, $status, $id_jenis_izin)
 	{
-		$data['id_izin']       = $id_izin;
+		// $data['id_izin']       = $id_izin;
 		$data['id_pegawai']       = $id_pegawai;
 		$data['lama_izin'] = $lama_izin;
 		$data['tgl_mulai']        = $tgl_mulai;
@@ -69,6 +121,11 @@ class M_Pengajuan_izin extends CI_Model
 		$data['id_jenis_izin']        = $id_jenis_izin;
 		$result              = $this->db->insert('izin', $data);
 		return $result;
+	}
+
+	public function updateStatus($id)
+	{
+		return $this->db->query("update izin set status = 2 where id_izin =" . $id);
 	}
 
 	public function get_by_id($id)

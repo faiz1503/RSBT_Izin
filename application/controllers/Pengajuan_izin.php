@@ -15,17 +15,23 @@ class Pengajuan_izin extends CI_Controller
 		$this->load->view('assets/_header');
 		$page_data['page_content'] = 'Pengajuan_izin';
 		$page_data['getPegawai']   = $this->M_Pengajuan_izin->getPegawai();
+		$sso_user_data = $this->session->userdata('sso_user_data'); //session
+		$page_data['sso_user_data'] = $sso_user_data;
+		$page_data['getStaff'] = $this->M_Pengajuan_izin->getDataStaff($sso_user_data->username);
+		$page_data['getPegawai'] = $this->M_Pengajuan_izin->getPegawaiByUsernameStaff($sso_user_data->username);
 		$page_data['getMaxId'] = $this->M_Pengajuan_izin->getKodeIzin();
+		$page_data['getJenisIzin'] = $this->M_Pengajuan_izin->getJenisIzin();
 		$this->load->view('Main', $page_data);
 		$this->load->view('assets/_footer');
 	}
 
 	public function izin($param = '', $id = '')
 	{
+		$sso_user_data = $this->session->userdata('sso_user_data'); //session
 		$view['title']    = 'Pengajuan Izin';
 		$view['pageName'] = 'Pengajuan_izin';
 		if ($param == 'getAllData') {
-			$dt    = $this->M_Pengajuan_izin->getAllData();
+			$dt    = $this->M_Pengajuan_izin->getAllData($sso_user_data->username);
 			$start = $this->input->post('start');
 			$data  = array();
 			foreach ($dt['data'] as $row) {
@@ -53,15 +59,33 @@ class Pengajuan_izin extends CI_Controller
 			die;
 		} else if ($param == 'getById') {
 		} else if ($param == 'addData') {
-			$config['upload_path']   = "./bukti_izin";
-			$config['allowed_types'] = 'gif|jpg|png|jpeg|png|bmp';
-			$config['remove_spaces'] = TRUE;
-			if (!empty($_FILES['bukti_izin']['name'])) {
-				$this->load->library('upload', $config);
-				$db['bukti_izin']    = $_FILES['bukti_izin']['name'];
-				$db['id_izin']    = htmlspecialchars($this->input->post('id_izin'));
+
+			$this->form_validation->set_rules("id_pegawai", "Nama Pegawai", "trim|required", array('required' => '{field} Wajib diisi !'));
+			// $this->form_validation->set_rules("lama_izin", "Lama Izin", "trim|required", array('required' => '{field} Wajib diisi !'));
+			$this->form_validation->set_rules("tgl_mulai", "Tanggal Mulai", "trim|required", array('required' => '{field} Wajib diisi !'));
+			$this->form_validation->set_rules("tgl_akhir", "Tanggal Berakhir", "trim|required", array('required' => '{field} Wajib diisi !'));
+			$this->form_validation->set_rules("jadwal_off", "Jadwal Off", "trim|required", array('required' => '{field} Wajib diisi !'));
+			// $this->form_validation->set_rules("acc_kaunit", "Konfirmasi KA Unit", "trim|required", array('required' => '{field} Wajib diisi !'));
+			// $this->form_validation->set_rules("ket_kaunit", "Keterangan KA Unit", "trim|required", array('required' => '{field} Wajib diisi !'));
+			// $this->form_validation->set_rules("acc_kabid", "Konfirmasi Kabid", "trim|required", array('required' => '{field} Wajib diisi !'));
+			// $this->form_validation->set_rules("ket_kabid", "Keterangan Kabid", "trim|required", array('required' => '{field} Wajib diisi !'));
+			// $this->form_validation->set_rules("acc_kabid_sdm", "Konfirmasi Kabid SDM", "trim|required", array('required' => '{field} Wajib diisi !'));
+			// $this->form_validation->set_rules("ket_sdm", "Keterangan SDM", "trim|required", array('required' => '{field} Wajib diisi !'));
+			// $this->form_validation->set_rules("status", "Status", "trim|required", array('required' => '{field} Wajib diisi !'));
+			$this->form_validation->set_rules("id_jenis_izin", "Jenis Izin", "trim|required", array('required' => '{field} Wajib diisi !'));
+
+			$this->form_validation->set_error_delimiters('<small id="text-error" style="color:red;">*', '</small>');
+			if ($this->form_validation->run() == FALSE) {
+				$result = array('status' => 'error', 'msg' => 'Data yang anda isi Belum Benar!');
+				foreach ($_POST as $key => $value) {
+					$result['messages'][$key] = form_error($key);
+				}
+			} else {
+				$tgl1 = new DateTime($this->input->post('tgl_mulai'));
+				$tgl2 = new DateTime($this->input->post('tgl_akhir'));
+				$d = $tgl2->diff($tgl1)->days;
 				$db['id_pegawai']    = htmlspecialchars($this->input->post('id_pegawai'));
-				$db['lama_izin']     = htmlspecialchars($this->input->post('lama_izin'));
+				$db['lama_izin']     = $d;
 				$db['tgl_mulai']     = htmlspecialchars($this->input->post('tgl_mulai'));
 				$db['tgl_akhir']     = htmlspecialchars($this->input->post('tgl_akhir'));
 				$db['jadwal_off']    = htmlspecialchars($this->input->post('jadwal_off'));
@@ -71,22 +95,76 @@ class Pengajuan_izin extends CI_Controller
 				$db['ket_kabid']     = htmlspecialchars($this->input->post('ket_kabid'));
 				$db['acc_kabid_sdm'] = htmlspecialchars($this->input->post('acc_kabid_sdm'));
 				$db['ket_sdm']       = htmlspecialchars($this->input->post('ket_sdm'));
-				$db['status']        = htmlspecialchars($this->input->post('status'));
+				$db['status']        = '1';
 				$db['id_jenis_izin'] = htmlspecialchars($this->input->post('id_jenis_izin'));
-				$cekData         = $this->M_Pengajuan_izin->getData();
-				if ($cekData[0]->bukti_izin != $db['bukti_izin']) {
-					$this->M_Pengajuan_izin->simpan_upload(str_replace(' ', '_', $db['bukti_izin']), $db['id_izin'], $db['id_pegawai'], $db['lama_izin'], $db['tgl_mulai'], $db['tgl_akhir'], $db['jadwal_off'], $db['acc_kaunit'], $db['ket_kaunit'], $db['acc_kabid'], $db['ket_kabid'], $db['acc_kabid_sdm'], $db['ket_sdm'], $db['status'], $db['id_jenis_izin']);
-					$this->upload->do_upload('bukti_izin');
-					$this->session->set_flashdata('alert', 'Berhasil Mengupload Data');
-					redirect('pengajuan_izin');
+				$result['messages']            = '';
+				$sso_user_data = $this->session->userdata('sso_user_data'); //session
+				$getDataStaff = $this->M_Pengajuan_izin->getDataStaff($sso_user_data->username);
+				$getPegawai = $this->M_Pengajuan_izin->getPegawaiByUsernameStaff($sso_user_data->username);
+
+				if ($sso_user_data->username == $getPegawai[0]->username) {
+					$result                = array('status' => 'success', 'msg' => 'Data berhasil dikirimkan');
+					$this->M_Pengajuan_izin->addData($db);
 				} else {
-					$this->session->set_flashdata('alert', 'Gagal Mengupload Data, Gambar yang anda pilih sudah ada!');
-					redirect('pengajuan_izin');
+					$result                = array('status' => 'error', 'msg' => 'Data gagal dikirimkan, pengguna tidak ditemukan');
 				}
+			}
+			$csrf = array(
+				'token' => $this->security->get_csrf_hash()
+			);
+			echo json_encode(array('result' => $result, 'csrf' => $csrf));
+			die;
+		} else if ($param == 'uploadData') {
+			$sso_user_data = $this->session->userdata('sso_user_data'); //session
+			$config['upload_path']   = "./bukti_izin";
+			$config['allowed_types'] = 'gif|jpg|png|jpeg|png|bmp';
+			$config['remove_spaces'] = TRUE;
+			if ($sso_user_data->username) {
+				$tgl1 = new DateTime($this->input->post('tgl_mulai'));
+				$tgl2 = new DateTime($this->input->post('tgl_akhir'));
+				$d = $tgl2->diff($tgl1)->days;
+				echo $d . " hari";
+				if (!empty($_FILES['bukti_izin']['name'])) {
+					$this->load->library('upload', $config);
+					$db['bukti_izin']    = $_FILES['bukti_izin']['name'];
+					// $db['id_izin']    = htmlspecialchars($this->input->post('id_izin'));
+					$db['id_pegawai']    = htmlspecialchars($this->input->post('id_pegawai'));
+					$db['lama_izin']     = $d;
+					$db['tgl_mulai']     = htmlspecialchars($this->input->post('tgl_mulai'));
+					$db['tgl_akhir']     = htmlspecialchars($this->input->post('tgl_akhir'));
+					$db['jadwal_off']    = htmlspecialchars($this->input->post('jadwal_off'));
+					$db['acc_kaunit']    = htmlspecialchars($this->input->post('acc_kaunit'));
+					$db['ket_kaunit']    = htmlspecialchars($this->input->post('ket_kaunit'));
+					$db['acc_kabid']     = htmlspecialchars($this->input->post('acc_kabid'));
+					$db['ket_kabid']     = htmlspecialchars($this->input->post('ket_kabid'));
+					$db['acc_kabid_sdm'] = htmlspecialchars($this->input->post('acc_kabid_sdm'));
+					$db['ket_sdm']       = htmlspecialchars($this->input->post('ket_sdm'));
+					$db['status']        = '1';
+					$db['id_jenis_izin'] = htmlspecialchars($this->input->post('id_jenis_izin'));
+					$cekData         = $this->M_Pengajuan_izin->getData();
+
+					if (empty($db['tgl_mulai'] || $db['tgl_akhir'] || $db['jadwal_off'])) {
+						$this->session->set_flashdata('success', 'Gagal Mengupload Data, Kosong!');
+					} else {
+
+						if ($cekData[0]->bukti_izin != $db['bukti_izin']) {
+							$this->M_Pengajuan_izin->simpan_upload(str_replace(' ', '_', $db['bukti_izin']),  $db['id_pegawai'], $db['lama_izin'], $db['tgl_mulai'], $db['tgl_akhir'], $db['jadwal_off'], $db['acc_kaunit'], $db['ket_kaunit'], $db['acc_kabid'], $db['ket_kabid'], $db['acc_kabid_sdm'], $db['ket_sdm'], $db['status'], $db['id_jenis_izin']);
+							$this->upload->do_upload('bukti_izin');
+							$this->session->set_flashdata('success', 'Berhasil Mengupload Data');
+							redirect('pengajuan_izin');
+						} else {
+							$this->session->set_flashdata('error', 'Gagal Mengupload Data, Gambar yang anda pilih sudah ada!');
+							redirect('pengajuan_izin');
+						}
+					}
+				}
+			} else {
+				$this->session->set_flashdata('notif', 'Gagal, Data pegawai tidak ditemukan !');
+				redirect('pengajuan_izin');
 			}
 		} else if ($param == 'update') {
 		} else if ($param == 'delete') {
-			$this->M_Pengajuan_izin->delete($id);
+			$this->M_Pengajuan_izin->updateStatus($id);
 			$result = array('status' => 'success', 'msg' => 'Data berhasil dihapus !');
 			echo json_encode(array('result' => $result));
 			die;
