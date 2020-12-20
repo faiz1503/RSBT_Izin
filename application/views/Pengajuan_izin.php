@@ -195,8 +195,7 @@
             });
     }
 </script>
-<?php $sso_user_data = $this->session->userdata('sso_user_data');
-?>
+<?php $sso_user_data = $this->session->userdata('sso_user_data'); ?>
 <div class="row">
     <div class="col-sm-12">
         <div class="panel panel-default card-view">
@@ -357,6 +356,12 @@
                                 <label class="col-form-label col-md-4 col-sm-3">Konfirmasi KA Unit<span class="required">*</span></label>
                                 <div class="col-md-8 xdisplay_inputx form-group row ">
                                     <input type="text" id="acc_kaunit" name="acc_kaunit" class="form-control">
+                                    <!-- <select name="acc_kaunit" id="acc_kaunit" class="form-control">
+                                        <option value="">Konfirmasi</option>
+                                        <option value="">Konfirmasi</option>
+                                        <option value="">Konfirmasi</option>
+
+                                    </select> -->
                                 </div>
                             </div>
                             <div class="field item form-group">

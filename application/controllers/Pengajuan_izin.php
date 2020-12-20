@@ -67,17 +67,9 @@ class Pengajuan_izin extends CI_Controller
 		} else if ($param == 'addData') {
 
 			$this->form_validation->set_rules("id_pegawai", "Nama Pegawai", "trim|required", array('required' => '{field} Wajib diisi !'));
-			// $this->form_validation->set_rules("lama_izin", "Lama Izin", "trim|required", array('required' => '{field} Wajib diisi !'));
 			$this->form_validation->set_rules("tgl_mulai", "Tanggal Mulai", "trim|required", array('required' => '{field} Wajib diisi !'));
 			$this->form_validation->set_rules("tgl_akhir", "Tanggal Berakhir", "trim|required", array('required' => '{field} Wajib diisi !'));
 			$this->form_validation->set_rules("jadwal_off", "Jadwal Off", "trim|required", array('required' => '{field} Wajib diisi !'));
-			// $this->form_validation->set_rules("acc_kaunit", "Konfirmasi KA Unit", "trim|required", array('required' => '{field} Wajib diisi !'));
-			// $this->form_validation->set_rules("ket_kaunit", "Keterangan KA Unit", "trim|required", array('required' => '{field} Wajib diisi !'));
-			// $this->form_validation->set_rules("acc_kabid", "Konfirmasi Kabid", "trim|required", array('required' => '{field} Wajib diisi !'));
-			// $this->form_validation->set_rules("ket_kabid", "Keterangan Kabid", "trim|required", array('required' => '{field} Wajib diisi !'));
-			// $this->form_validation->set_rules("acc_kabid_sdm", "Konfirmasi Kabid SDM", "trim|required", array('required' => '{field} Wajib diisi !'));
-			// $this->form_validation->set_rules("ket_sdm", "Keterangan SDM", "trim|required", array('required' => '{field} Wajib diisi !'));
-			// $this->form_validation->set_rules("status", "Status", "trim|required", array('required' => '{field} Wajib diisi !'));
 			$this->form_validation->set_rules("id_jenis_izin", "Jenis Izin", "trim|required", array('required' => '{field} Wajib diisi !'));
 
 			$this->form_validation->set_error_delimiters('<small id="text-error" style="color:red;">*', '</small>');
@@ -144,19 +136,10 @@ class Pengajuan_izin extends CI_Controller
 			}
 		} else if ($param == 'update') {
 			$this->form_validation->set_rules("id_pegawai", "Nama Pegawai", "trim|required", array('required' => '{field} Wajib diisi !'));
-			// $this->form_validation->set_rules("lama_izin", "Lama Izin", "trim|required", array('required' => '{field} Wajib diisi !'));
 			$this->form_validation->set_rules("tgl_mulai", "Tanggal Mulai", "trim|required", array('required' => '{field} Wajib diisi !'));
 			$this->form_validation->set_rules("tgl_akhir", "Tanggal Berakhir", "trim|required", array('required' => '{field} Wajib diisi !'));
 			$this->form_validation->set_rules("jadwal_off", "Jadwal Off", "trim|required", array('required' => '{field} Wajib diisi !'));
-			// $this->form_validation->set_rules("acc_kaunit", "Konfirmasi KA Unit", "trim|required", array('required' => '{field} Wajib diisi !'));
-			// $this->form_validation->set_rules("ket_kaunit", "Keterangan KA Unit", "trim|required", array('required' => '{field} Wajib diisi !'));
-			// $this->form_validation->set_rules("acc_kabid", "Konfirmasi Kabid", "trim|required", array('required' => '{field} Wajib diisi !'));
-			// $this->form_validation->set_rules("ket_kabid", "Keterangan Kabid", "trim|required", array('required' => '{field} Wajib diisi !'));
-			// $this->form_validation->set_rules("acc_kabid_sdm", "Konfirmasi Kabid SDM", "trim|required", array('required' => '{field} Wajib diisi !'));
-			// $this->form_validation->set_rules("ket_sdm", "Keterangan SDM", "trim|required", array('required' => '{field} Wajib diisi !'));
-			// $this->form_validation->set_rules("status", "Status", "trim|required", array('required' => '{field} Wajib diisi !'));
 			$this->form_validation->set_rules("id_jenis_izin", "Jenis Izin", "trim|required", array('required' => '{field} Wajib diisi !'));
-
 			$this->form_validation->set_error_delimiters('<small id="text-error" style="color:red;">*', '</small>');
 			if ($this->form_validation->run() == FALSE) {
 				$result = array('status' => 'error', 'msg' => 'Data yang anda isi belum benar !');
